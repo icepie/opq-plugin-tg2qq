@@ -3,10 +3,10 @@
 import threading
 import telebot
 ## tgbot debug mode
-import logging
+#import logging
 
-logger = telebot.logger
-telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
+#logger = telebot.logger
+#telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 from botoy import Action, AsyncBotoy, Botoy, EventMsg, FriendMsg, GroupMsg, AsyncAction
 
@@ -21,7 +21,11 @@ qq_group_id = 1111111123
 tg_chat_id = '-1111231111'
 
 def tg_thread():
-    tgbot.polling()
+    try:
+        tgbot.polling(none_stop=True)
+    except:
+        print("TG Bot connect fail")
+        tgbot.polling(none_stop=True)
 
 def qq_thread():
     thread = threading.Thread(target=qqbot.run)
@@ -47,7 +51,9 @@ def event(ctx: EventMsg):
 
 @tgbot.message_handler(func=lambda message: True)
 def echo_all(message):
-    action.sendGroupText(qq_group_id, "[TG]" + " " + message.from_user.username + ": " + message.text)
+    print(message.chat.id)
+    if message.chat.id == int(tg_chat_id):
+        action.sendGroupText(qq_group_id, "[TG]" + " " + message.from_user.username + ": " + message.text)
 
 
 @qqbot.when_connected
