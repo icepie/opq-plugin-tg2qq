@@ -7,7 +7,7 @@ A opq plugin that implements a tg and qq message connection...
 ## forward
 - [x] text
 - [ ] reply
-- [ ] Photo
+- [x] photo
 - [ ] voice
 - [ ] video
 - [ ] location
