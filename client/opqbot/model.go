@@ -1,4 +1,4 @@
-package opq
+package opqbot
 
 const (
 	SendTypeTextMsg                = 1

@@ -1,4 +1,4 @@
-package opq
+package opqbot
 
 import (
 	"encoding/json"
@@ -328,25 +328,25 @@ func (b *BotManager) AddEvent(EventName string, f interface{}) error {
 	var okStruck string
 	switch EventName {
 	case EventNameOnFriendMessage:
-		okStruck = "opq.FriendMsgPack"
+		okStruck = "opqbot.FriendMsgPack"
 	case EventNameOnGroupMessage:
-		okStruck = "opq.GroupMsgPack"
+		okStruck = "opqbot.GroupMsgPack"
 	case EventNameOnGroupJoin:
-		okStruck = "opq.GroupJoinPack"
+		okStruck = "opqbot.GroupJoinPack"
 	case EventNameOnGroupAdmin:
-		okStruck = "opq.GroupAdminPack"
+		okStruck = "opqbot.GroupAdminPack"
 	case EventNameOnGroupExit:
-		okStruck = "opq.GroupExitPack"
+		okStruck = "opqbot.GroupExitPack"
 	case EventNameOnGroupExitSuccess:
-		okStruck = "opq.GroupExitSuccessPack"
+		okStruck = "opqbot.GroupExitSuccessPack"
 	case EventNameOnGroupAdminSysNotify:
-		okStruck = "opq.GroupAdminSysNotifyPack"
+		okStruck = "opqbot.GroupAdminSysNotifyPack"
 	case EventNameOnGroupRevoke:
-		okStruck = "opq.GroupRevokePack"
+		okStruck = "opqbot.GroupRevokePack"
 	case EventNameOnGroupShut:
-		okStruck = "opq.GroupShutPack"
+		okStruck = "opqbot.GroupShutPack"
 	case EventNameOnGroupSystemNotify:
-		okStruck = "opq.GroupSystemNotifyPack"
+		okStruck = "opqbot.GroupSystemNotifyPack"
 	case EventNameOnDisconnected:
 		okStruck = "ok"
 	case EventNameOnConnected:
