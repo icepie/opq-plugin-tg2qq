@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"opq-plugin-tg2qq/client/opqbot"
+	"opq-plugin-tg2qq/conf"
 	"strconv"
 	"strings"
 	"time"
@@ -15,11 +16,11 @@ var (
 
 func OPQBotInit() {
 
-	OPQBot := opqbot.NewBotManager(1962847213, "http://127.0.0.1:8881")
+	OPQBot := opqbot.NewBotManager(1962847213, conf.ProConf.OPQBot.Url)
 
 	err := OPQBot.Start()
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("")
 	}
 	defer OPQBot.Stop()
 	err = OPQBot.AddEvent(opqbot.EventNameOnGroupMessage, func(botQQ int64, packet opqbot.GroupMsgPack) {
@@ -145,6 +146,7 @@ func OPQBotInit() {
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnConnected, func() {
 		log.Println("连接成功！！！")
+		log.Println(OPQBot.GetUserInfo(OPQBot.QQ))
 	})
 	if err != nil {
 		log.Println(err.Error())

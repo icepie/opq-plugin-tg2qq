@@ -282,7 +282,7 @@ func (b *BotManager) GetUserInfo(qq int64) (UserInfo, error) {
 		// log.Println(err.Error())
 		return result, err
 	}
-	log.Println(res.Text())
+	//log.Println(res.Text())
 	err = res.Json(&result)
 	if err != nil {
 		return result, err

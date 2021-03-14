@@ -1,0 +1,10 @@
+opqbot:
+  url: http://127.0.0.1:8888
+  qq: 0
+  group: 0
+tgbot:
+  token: ""
+  chatid: ""
+  proxy:
+    enable: true
+    url: sock5://127.0.0.1:1080
