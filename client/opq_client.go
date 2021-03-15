@@ -20,7 +20,7 @@ func OPQBotInit() {
 
 	err := OPQBot.Start()
 	if err != nil {
-		log.Println("")
+		log.Println("[OPQ] 连接失败")
 	}
 	defer OPQBot.Stop()
 	err = OPQBot.AddEvent(opqbot.EventNameOnGroupMessage, func(botQQ int64, packet opqbot.GroupMsgPack) {
@@ -149,7 +149,7 @@ func OPQBotInit() {
 		log.Println(OPQBot.GetUserInfo(OPQBot.QQ))
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("连接失败")
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnDisconnected, func() {
 		log.Println("连接断开！！")

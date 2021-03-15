@@ -40,9 +40,6 @@ type Config struct {
 // ProConf 新建实例
 var ProConf = new(Config)
 
-// MAIN 主地址配置
-var MAIN string
-
 // initConfig 初始化配置
 func initConfig(cfpath string) error {
 
@@ -90,12 +87,12 @@ func INIT() {
 		log.Warningln("Can not read the config file, will recreate it! ")
 		// 初始化配置
 		ProConf.OPQBot.Url = "http://127.0.0.1:8888"
-		ProConf.TGBot.Proxy.Enable = true
+		ProConf.TGBot.Proxy.Enable = false
 		ProConf.TGBot.Proxy.Url = "sock5://127.0.0.1:1080"
 		if err = initConfig(cfpath); err != nil { // 重新初始化配置文件
-			log.Fatalln(err)
+		//	log.Fatalln(err)
 		}
-		log.Println(errors.New("Please edit the " + cfpath + "， then restart lit-edu-go"))
+		log.Println(errors.New("Please edit the " + cfpath + "，then restart app"))
 		os.Exit(1)
 	}
 	// 将读取的配置信息保存至全局变量Conf
