@@ -60,8 +60,8 @@ func initConfig(cfpath string) error {
 	return nil
 }
 
-// INIT 初始化函数
-func INIT() {
+// Init 初始化函数
+func Init() {
 
 	// 取项目地址
 	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -90,7 +90,7 @@ func INIT() {
 		ProConf.TGBot.Proxy.Enable = false
 		ProConf.TGBot.Proxy.Url = "sock5://127.0.0.1:1080"
 		if err = initConfig(cfpath); err != nil { // 重新初始化配置文件
-		//	log.Fatalln(err)
+			log.Fatalln(err)
 		}
 		log.Println(errors.New("Please edit the " + cfpath + "，then restart app"))
 		os.Exit(1)

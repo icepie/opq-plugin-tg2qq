@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	"log"
 	"net/url"
+	"opq-plugin-tg2qq/util/log"
 	"os"
 	"time"
 
@@ -30,11 +30,11 @@ func TGBotInit() {
 
 		purl, err := url.Parse(conf.ProConf.TGBot.Proxy.Url)
 		if err != nil {
-			log.Fatal(err)
+			log.TGLog.Error("[TGBot] Proxy:", "Can not parse the proxy url")
 		}
 
 		if purl.Scheme == "http" {
-			log.Println("[TG] 使用http代理")
+			log.TGLog.Info("[TGBot] Proxy: %s", "http")
 			httpclient, err := proxy.HttpClient(conf.ProConf.TGBot.Proxy.Url)
 			if err != nil {
 				fmt.Println(err)
@@ -43,7 +43,7 @@ func TGBotInit() {
 			TGSet.Client = httpclient
 		} else if purl.Scheme == "sock5" {
 			sockclient, err := proxy.Socks5Client(purl.Host)
-			log.Println("[TG] 使用sock5代理")
+			log.TGLog.Info("[TGBot] Proxy: %s", "sock5")
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
@@ -55,10 +55,10 @@ func TGBotInit() {
 
 	TGBot, err := tb.NewBot(TGSet)
 	if err != nil {
-		log.Fatal(err)
+		log.TGLog.Error("[TGBot] Connet %s", err.Error())
 		return
 	} else {
-		log.Println(TGBot.Me)
+		log.TGLog.Info("[TGBot] Online:", TGBot.Me)
 	}
 
 	TGBot.Handle("/hello", func(m *tb.Message) {

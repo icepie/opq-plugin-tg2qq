@@ -2,9 +2,9 @@ package client
 
 import (
 	"fmt"
-	"log"
 	"opq-plugin-tg2qq/client/opqbot"
 	"opq-plugin-tg2qq/conf"
+	"opq-plugin-tg2qq/util/log"
 	"strconv"
 	"strings"
 	"time"
@@ -20,7 +20,7 @@ func OPQBotInit() {
 
 	err := OPQBot.Start()
 	if err != nil {
-		log.Println("[OPQ] 连接失败")
+		log.OPQLog.Info("[OPQ] 连接失败")
 	}
 	defer OPQBot.Stop()
 	err = OPQBot.AddEvent(opqbot.EventNameOnGroupMessage, func(botQQ int64, packet opqbot.GroupMsgPack) {
@@ -57,14 +57,14 @@ func OPQBotInit() {
 			if packet.Content == "刷新" && packet.FromUserID == 2435932516 {
 				err := OPQBot.RefreshKey()
 				if err != nil {
-					log.Println(err.Error())
+					log.OPQLog.Info(err.Error())
 				}
 			}
 		}
-		log.Println(botQQ, packet)
+		log.OPQLog.Info("%t", botQQ, packet)
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.OPQLog.Info(err.Error())
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnFriendMessage, func(botQQ int64, packet opqbot.FriendMsgPack) {
 		if packet.Content == "赞我" {
@@ -98,7 +98,7 @@ func OPQBotInit() {
 		}
 		if c := strings.Split(packet.Content, " "); len(c) >= 2 {
 			if c[0] == "#查询" {
-				log.Println(c[1])
+				log.OPQLog.Info(c[1])
 				qq, err := strconv.ParseInt(c[1], 10, 64)
 				if err != nil {
 					OPQBot.Send(opqbot.SendMsgPack{
@@ -109,7 +109,7 @@ func OPQBotInit() {
 					})
 				}
 				user, err := OPQBot.GetUserInfo(qq)
-				log.Println(user)
+				log.OPQLog.Info("", user)
 				if err != nil {
 					OPQBot.Send(opqbot.SendMsgPack{
 						SendType:   opqbot.SendTypeTextMsg,
@@ -133,35 +133,38 @@ func OPQBotInit() {
 				}
 			}
 		}
-		log.Println(botQQ, packet)
+		log.OPQLog.Info("", botQQ, packet)
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.OPQLog.Info(err.Error())
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnGroupShut, func(botQQ int64, packet opqbot.GroupShutPack) {
-		log.Println(botQQ, packet)
+		log.OPQLog.Info("", botQQ, packet)
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.OPQLog.Info(err.Error())
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnConnected, func() {
-		log.Println("连接成功！！！")
-		log.Println(OPQBot.GetUserInfo(OPQBot.QQ))
+		log.OPQLog.Info("连接成功！！！")
+
+		info, _ := OPQBot.GetUserInfo(OPQBot.QQ)
+
+		log.OPQLog.Info("", info)
 	})
 	if err != nil {
-		log.Println("连接失败")
+		log.OPQLog.Info("连接失败")
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnDisconnected, func() {
-		log.Println("连接断开！！")
+		log.OPQLog.Info("连接断开！！")
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.OPQLog.Info(err.Error())
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnOther, func(botQQ int64, e interface{}) {
-		log.Println(e)
+		log.OPQLog.Error(err.Error())
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.OPQLog.Info(err.Error())
 	}
 	time.Sleep(1 * time.Hour)
 }
