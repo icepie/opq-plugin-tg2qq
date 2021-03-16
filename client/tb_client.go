@@ -124,13 +124,20 @@ func TGBotInit() {
 				// 	}
 				// }
 
-				client := TGSet.Client
-
-				// Get the data
-				resp, err := client.Get(fileURL)
-				if err != nil {
-					logs.Error(err)
+				var resp *http.Response
+				if conf.ProConf.TGBot.Proxy.Enable {
+					// Get the data use proxy cilent
+					resp, err = TGSet.Client.Get(fileURL)
+					if err != nil {
+						logs.Error(err)
+					}
+				} else {
+					resp, err = http.Get(fileURL)
+					if err != nil {
+						logs.Error(err)
+					}
 				}
+
 				defer resp.Body.Close()
 
 				// outFilePath := cacheDir + "/" + m.Photo.FileID
