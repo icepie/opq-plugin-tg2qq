@@ -1,12 +1,12 @@
 package conf
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/astaxie/beego/logs"
+
 	"gopkg.in/yaml.v2"
 
 	"github.com/spf13/viper"
@@ -15,8 +15,8 @@ import (
 // OPQBotConfig OPQ Bot 配置
 type OPQBotConfig struct {
 	Url   string
-	QQ    int
-	Group int
+	QQ    int64
+	Group int64
 }
 
 type ProxyConfig struct {
@@ -60,8 +60,8 @@ func initConfig(cfpath string) error {
 	return nil
 }
 
-// Init 初始化函数
-func Init() {
+// init 初始化函数
+func init() {
 
 	// 取项目地址
 	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -78,26 +78,26 @@ func Init() {
 
 	cfpath := path + pathsep + "conf.yaml"
 
-	viper.AddConfigPath(path)   // 设置读取的文件路径
-	viper.SetConfigName("conf") // 设置读取的文件名
-	viper.SetConfigType("yaml") // 设置文件的类型
+	viper.AddConfigPath(path)
+	viper.SetConfigName("conf")
+	viper.SetConfigType("yaml")
 
-	err = viper.ReadInConfig() // 读取配置信息
-	if err != nil {            // 读取配置信息失败
-		log.Warningln("Can not read the config file, will recreate it! ")
+	err = viper.ReadInConfig()
+	if err != nil {
+		logs.Emergency("Can not read the config file, will recreate it! ")
 		// 初始化配置
 		ProConf.OPQBot.Url = "http://127.0.0.1:8888"
 		ProConf.TGBot.Proxy.Enable = false
 		ProConf.TGBot.Proxy.Url = "sock5://127.0.0.1:1080"
-		if err = initConfig(cfpath); err != nil { // 重新初始化配置文件
-			log.Fatalln(err)
+		if err = initConfig(cfpath); err != nil {
+			logs.Error("%s", err.Error())
 		}
-		log.Println(errors.New("Please edit the " + cfpath + "，then restart app"))
+		logs.Trace("Please edit the " + cfpath + "，then restart app")
 		os.Exit(1)
 	}
 	// 将读取的配置信息保存至全局变量Conf
 	if err := viper.Unmarshal(ProConf); err != nil {
-		log.Fatalln(err)
+		logs.Error(err.Error())
 	}
 
 }

@@ -3,12 +3,13 @@ package opqbot
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/astaxie/beego/logs"
 
 	"github.com/asmcos/requests"
 	"github.com/goinggo/mapstructure"
@@ -38,14 +39,14 @@ func (b *BotManager) Start() error {
 		return err
 	}
 	_ = c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
-		// log.Println("连接成功！")
+		// logs.Error("[OPQ] 连接成功！")
 		f, ok := b.onEvent[EventNameOnConnected]
 		if ok {
 			f.Call([]reflect.Value{})
 		}
 	})
 	_ = c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
-		// log.Println("连接断开！")
+		// logs.Error("[OPQ] 连接断开！")
 		f, ok := b.onEvent[EventNameOnDisconnected]
 		if ok {
 			f.Call([]reflect.Value{})
@@ -62,12 +63,12 @@ func (b *BotManager) Start() error {
 			result := GroupMsgPack{}
 			err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 			if err != nil {
-				log.Println("解析包错误")
+				logs.Error("[OPQ] 解析包错误")
 				return
 			}
 			f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
 		}
-		//log.Println(args)
+		//logs.Println(args)
 	})
 	_ = c.On("OnFriendMsgs", func(h *gosocketio.Channel, args returnPack) {
 		if args.CurrentQQ != b.QQ {
@@ -80,12 +81,12 @@ func (b *BotManager) Start() error {
 			result := FriendMsgPack{}
 			err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 			if err != nil {
-				log.Println("解析包错误")
+				logs.Error("[OPQ] 解析包错误")
 				return
 			}
 			f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
 		}
-		//log.Println(args)
+		//logs.Println(args)
 	})
 	_ = c.On("OnEvents", func(h *gosocketio.Channel, args eventPack) {
 		if args.CurrentQQ != b.QQ {
@@ -93,12 +94,12 @@ func (b *BotManager) Start() error {
 		}
 		e, ok := args.CurrentPacket.Data.(map[string]interface{})
 		if !ok {
-			log.Println("解析出错")
+			logs.Error("[OPQ] 解析出错")
 			return
 		}
 		e1, ok := e["EventName"].(string)
 		if !ok {
-			log.Println("解析出错")
+			logs.Error("[OPQ] 解析出错")
 			return
 		}
 		switch e1 {
@@ -110,7 +111,7 @@ func (b *BotManager) Start() error {
 				result := GroupJoinPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -123,7 +124,7 @@ func (b *BotManager) Start() error {
 				result := GroupAdminPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -136,7 +137,7 @@ func (b *BotManager) Start() error {
 				result := GroupExitPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -149,7 +150,7 @@ func (b *BotManager) Start() error {
 				result := GroupExitSuccessPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -162,7 +163,7 @@ func (b *BotManager) Start() error {
 				result := GroupAdminSysNotifyPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -175,7 +176,7 @@ func (b *BotManager) Start() error {
 				result := GroupRevokePack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -188,7 +189,7 @@ func (b *BotManager) Start() error {
 				result := GroupShutPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -201,7 +202,7 @@ func (b *BotManager) Start() error {
 				result := GroupSystemNotifyPack{}
 				err = mapstructure.Decode(args.CurrentPacket.Data, &result)
 				if err != nil {
-					log.Println("解析包错误")
+					logs.Error("[OPQ] 解析包错误")
 					return
 				}
 				f.Call([]reflect.Value{reflect.ValueOf(args.CurrentQQ), reflect.ValueOf(result)})
@@ -240,7 +241,7 @@ func (b *BotManager) Stop() {
 func (b *BotManager) ReCallMsg(GroupID, MsgRandom int64, MsgSeq int) error {
 	res, err := requests.PostJson(b.OPQUrl+"/v1/LuaApiCaller?funcname=PbMessageSvc.PbMsgWithDraw&qq="+strconv.FormatInt(b.QQ, 10), map[string]interface{}{"GroupID": GroupID, "MsgSeq": MsgSeq, "MsgRandom": MsgRandom})
 	if err != nil {
-		// log.Println(err.Error())
+		// logs.Println(err.Error())
 		return err
 	}
 	var result Result
@@ -259,7 +260,7 @@ func (b *BotManager) ReCallMsg(GroupID, MsgRandom int64, MsgSeq int) error {
 func (b *BotManager) RefreshKey() error {
 	res, err := requests.Get(b.OPQUrl + "/v1/RefreshKeys?qq=" + strconv.FormatInt(b.QQ, 10))
 	if err != nil {
-		// log.Println(err.Error())
+		// logs.Println(err.Error())
 		return err
 	}
 	var result Result
@@ -279,10 +280,10 @@ func (b *BotManager) GetUserInfo(qq int64) (UserInfo, error) {
 	var result UserInfo
 	res, err := requests.PostJson(b.OPQUrl+"/v1/LuaApiCaller?funcname=SummaryCard.ReqSummaryCard&qq="+strconv.FormatInt(b.QQ, 10), map[string]int64{"UserID": qq})
 	if err != nil {
-		// log.Println(err.Error())
+		// logs.Println(err.Error())
 		return result, err
 	}
-	//log.Println(res.Text())
+	//logs.Println(res.Text())
 	err = res.Json(&result)
 	if err != nil {
 		return result, err
@@ -363,7 +364,7 @@ func (b *BotManager) AddEvent(EventName string, f interface{}) error {
 		b.onEvent[EventName] = fVal
 		return nil
 	}
-	//log.Println( fVal.Type().In(0).String())
+	//logs.Println( fVal.Type().In(0).String())
 	if fVal.Type().NumIn() != 2 || fVal.Type().In(1).String() != okStruck {
 		return errors.New("FuncError, Your Function Should Have " + okStruck)
 	}
@@ -376,7 +377,7 @@ func (b *BotManager) AddEvent(EventName string, f interface{}) error {
 }
 
 func (b *BotManager) receiveSendPack() {
-	log.Println("QQ发送信息通道开启")
+	logs.Info("[OPQ] Threads starting...")
 OuterLoop:
 	for {
 		if !b.Running {
@@ -396,7 +397,7 @@ OuterLoop:
 				sendJsonPack["Content"] = content.Content
 				sendJsonPack["GroupID"] = content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypePicMsgByUrl:
@@ -413,7 +414,7 @@ OuterLoop:
 				sendJsonPack["GroupID"] = Content.Group
 				sendJsonPack["FlashPic"] = Content.Flash
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypePicMsgByLocal:
@@ -430,7 +431,7 @@ OuterLoop:
 				sendJsonPack["GroupID"] = Content.Group
 				sendJsonPack["FlashPic"] = Content.Flash
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypePicMsgByMd5:
@@ -447,7 +448,7 @@ OuterLoop:
 				sendJsonPack["GroupID"] = Content.Group
 				sendJsonPack["FlashPic"] = Content.Flash
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeVoiceByUrl:
@@ -460,7 +461,7 @@ OuterLoop:
 				sendJsonPack["VoiceUrl"] = Content.VoiceUrl
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeVoiceByLocal:
@@ -473,7 +474,7 @@ OuterLoop:
 				sendJsonPack["VoiceUrl"] = Content.Path
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeXml:
@@ -486,7 +487,7 @@ OuterLoop:
 				sendJsonPack["Content"] = Content.Content
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeJson:
@@ -499,7 +500,7 @@ OuterLoop:
 				sendJsonPack["Content"] = Content.Content
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeForword:
@@ -514,7 +515,7 @@ OuterLoop:
 				sendJsonPack["ForwordField"] = Content.ForwordField
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeReplay:
@@ -527,18 +528,18 @@ OuterLoop:
 				sendJsonPack["ReplayInfo"] = Content.ReplayInfo
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				log.Println("类型不匹配")
+				logs.Error("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		}
 		tmp, _ := json.Marshal(sendJsonPack)
-		log.Println(string(tmp))
+		logs.Trace(string(tmp))
 		res, err := requests.PostJson(b.OPQUrl+"/v1/LuaApiCaller?funcname=SendMsgV2&qq="+strconv.FormatInt(b.QQ, 10), sendJsonPack)
 		if err != nil {
-			log.Println(err.Error())
+			logs.Error(err.Error())
 			continue
 		}
-		log.Println(res.Text())
+		logs.Trace(res.Text())
 		time.Sleep(1 * time.Second)
 	}
 }

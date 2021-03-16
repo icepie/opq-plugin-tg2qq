@@ -3,9 +3,10 @@ package client
 import (
 	"fmt"
 	"net/url"
-	"opq-plugin-tg2qq/util/log"
 	"os"
 	"time"
+
+	"github.com/astaxie/beego/logs"
 
 	"opq-plugin-tg2qq/conf"
 	"opq-plugin-tg2qq/util/proxy"
@@ -24,17 +25,18 @@ func TGBotInit() {
 		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	}
 
-	// setting proxy
+	logs.Info("[TGBot] Threads starting...")
 
+	// setting proxy
 	if conf.ProConf.TGBot.Proxy.Enable {
 
 		purl, err := url.Parse(conf.ProConf.TGBot.Proxy.Url)
 		if err != nil {
-			log.TGLog.Error("[TGBot] Proxy:", "Can not parse the proxy url")
+			logs.Error("[TGBot] Proxy:", "Can not parse the proxy url")
 		}
 
 		if purl.Scheme == "http" {
-			log.TGLog.Info("[TGBot] Proxy: %s", "http")
+			logs.Info("[TGBot] Proxy: http")
 			httpclient, err := proxy.HttpClient(conf.ProConf.TGBot.Proxy.Url)
 			if err != nil {
 				fmt.Println(err)
@@ -43,7 +45,7 @@ func TGBotInit() {
 			TGSet.Client = httpclient
 		} else if purl.Scheme == "sock5" {
 			sockclient, err := proxy.Socks5Client(purl.Host)
-			log.TGLog.Info("[TGBot] Proxy: %s", "sock5")
+			logs.Info("[TGBot] Proxy: %s", "sock5")
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
@@ -55,10 +57,9 @@ func TGBotInit() {
 
 	TGBot, err := tb.NewBot(TGSet)
 	if err != nil {
-		log.TGLog.Error("[TGBot] Connet %s", err.Error())
-		return
+		logs.Emergency("[TGBot] Connet %s", err.Error())
 	} else {
-		log.TGLog.Info("[TGBot] Online:", TGBot.Me)
+		logs.Info("[TGBot] Online: %+v", *TGBot.Me)
 	}
 
 	TGBot.Handle("/hello", func(m *tb.Message) {
