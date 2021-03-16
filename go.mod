@@ -10,6 +10,7 @@ require (
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/viper v1.7.1
+	github.com/wxnacy/wgo v1.0.4
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	gopkg.in/tucnak/telebot.v2 v2.3.5
 )

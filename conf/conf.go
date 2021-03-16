@@ -12,9 +12,10 @@ import (
 
 // OPQBotConfig OPQ Bot 配置
 type OPQBotConfig struct {
-	Url   string
-	QQ    int64
-	Group int64
+	Url      string
+	QQ       int64
+	FilterQQ []int64
+	Group    int64
 }
 
 type ProxyConfig struct {
@@ -24,9 +25,10 @@ type ProxyConfig struct {
 
 // TGBotConfig Telegram Bot 配置
 type TGBotConfig struct {
-	Token  string
-	ChatID string
-	Proxy  ProxyConfig
+	Token    string
+	ChatID   string
+	FilterID []string
+	Proxy    ProxyConfig
 }
 
 // Config 基础配置

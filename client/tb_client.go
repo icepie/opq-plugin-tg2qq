@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/logs"
+	"github.com/wxnacy/wgo/arrays"
 
 	"opq-plugin-tg2qq/client/opqbot"
 	"opq-plugin-tg2qq/conf"
@@ -88,7 +89,7 @@ func TGBotInit() {
 	// Group text msg handler
 	TGBot.Handle(tb.OnText, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
-			if m.Sender.ID != TGBot.Me.ID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
 				OPQBot.Send(opqbot.SendMsgPack{
 					SendType:   opqbot.SendTypeTextMsg,
 					SendToType: opqbot.SendToTypeGroup,
@@ -102,7 +103,7 @@ func TGBotInit() {
 
 	TGBot.Handle(tb.OnPhoto, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
-			if m.Sender.ID != TGBot.Me.ID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
 
 				fileURL, err := TGBot.FileURLByID(m.Photo.FileID)
 				if err != nil {
@@ -195,7 +196,7 @@ func TGBotInit() {
 	// Group voice msg handler
 	TGBot.Handle(tb.OnVoice, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
-			if m.Sender.ID != TGBot.Me.ID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
 				OPQBot.Send(opqbot.SendMsgPack{
 					SendType:   opqbot.SendTypeTextMsg,
 					SendToType: opqbot.SendToTypeGroup,
@@ -210,9 +211,7 @@ func TGBotInit() {
 
 	TGBot.Handle(tb.OnAudio, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
-			logs.Info("-> [TGbot] %+v", m.Chat)
-
-			if m.Sender.ID != TGBot.Me.ID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
 
 				fileURL, err := TGBot.FileURLByID(m.Audio.FileID)
 				if err != nil {

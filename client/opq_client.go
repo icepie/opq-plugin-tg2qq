@@ -7,6 +7,8 @@ import (
 	"opq-plugin-tg2qq/conf"
 	"time"
 
+	"github.com/wxnacy/wgo/arrays"
+
 	"github.com/astaxie/beego/logs"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -25,7 +27,7 @@ func OPQBotInit() {
 	}
 	defer OPQBot.Stop()
 	err = OPQBot.AddEvent(opqbot.EventNameOnGroupMessage, func(botQQ int64, packet opqbot.GroupMsgPack) {
-		if packet.FromGroupID == conf.ProConf.OPQBot.Group && packet.FromUserID != OPQBot.QQ {
+		if packet.FromGroupID == conf.ProConf.OPQBot.Group && packet.FromUserID != OPQBot.QQ && arrays.ContainsInt(conf.ProConf.OPQBot.FilterQQ, packet.FromUserID) == -1 {
 			if packet.MsgType == "TextMsg" {
 				TGBot.Notify(MG, tb.Typing)
 				TGBot.Send(MG, fmt.Sprintf("[QQ] [%s] %s", packet.FromNickName, packet.Content))
