@@ -37,6 +37,19 @@ type SendMsgPack struct {
 	Content    interface{}
 }
 
+type SendPicMsgPackV1 struct {
+	ToUser       int64  `json:"toUser"`
+	SendToType   int    `json:"sendToType"`
+	SendMsgType  string `json:"sendMsgType"`
+	Content      string `json:"content"`
+	GroupID      int    `json:"groupid"`
+	AtUser       int    `json:"atUser"`
+	PicUrl       string `json:"picUrl"`
+	PicBase64Buf string `json:"picBase64Buf"`
+	FileMd5      string `json:"fileMd5"`
+	FlashPic     bool   `json:"flashPic"`
+}
+
 type SendTypeTextMsgContent struct {
 	Content string
 }
@@ -149,6 +162,21 @@ type currentPacket struct {
 	Data      interface{} `json:"Data"`
 	WebConnID string      `json:"WebConnId"`
 }
+
+type GroupPic struct {
+	FileId       int64  `json:"FileId"`
+	FileMd5      string `json:"FileMd5"`
+	FileSize     int64  `json:"FileSize"`
+	ForwordBuf   string `json:"ForwordBuf"`
+	ForwordField int64  `json:"ForwordField"`
+	Url          string `json:"Url"`
+}
+type GroupContent struct {
+	Content  interface{} `json:"Content"`
+	GroupPic []GroupPic  `json:"GroupPic"`
+	Tips     string      `json:"Tips"`
+}
+
 type GroupMsgPack struct {
 	Content       string      `json:"Content"`
 	FromGroupID   int64       `json:"FromGroupId"`

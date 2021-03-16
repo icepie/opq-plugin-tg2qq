@@ -7,8 +7,6 @@ import (
 
 	"github.com/astaxie/beego/logs"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/spf13/viper"
 )
 
@@ -40,26 +38,6 @@ type Config struct {
 // ProConf 新建实例
 var ProConf = new(Config)
 
-// initConfig 初始化配置
-func initConfig(cfpath string) error {
-
-	b, err := yaml.Marshal(ProConf)
-	if err != nil {
-		return err
-	}
-
-	f, err := os.Create(cfpath)
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-
-	f.WriteString(string(b))
-
-	return nil
-}
-
 // init 初始化函数
 func init() {
 
@@ -84,14 +62,6 @@ func init() {
 
 	err = viper.ReadInConfig()
 	if err != nil {
-		logs.Emergency("Can not read the config file, will recreate it! ")
-		// 初始化配置
-		ProConf.OPQBot.Url = "http://127.0.0.1:8888"
-		ProConf.TGBot.Proxy.Enable = false
-		ProConf.TGBot.Proxy.Url = "sock5://127.0.0.1:1080"
-		if err = initConfig(cfpath); err != nil {
-			logs.Error("%s", err.Error())
-		}
 		logs.Trace("Please edit the " + cfpath + "，then restart app")
 		os.Exit(1)
 	}
