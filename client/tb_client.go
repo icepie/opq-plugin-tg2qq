@@ -90,12 +90,34 @@ func TGBotInit() {
 	TGBot.Handle(tb.OnText, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
 			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
-				OPQBot.Send(opqbot.SendMsgPack{
-					SendType:   opqbot.SendTypeTextMsg,
-					SendToType: opqbot.SendToTypeGroup,
-					ToUserUid:  conf.ProConf.OPQBot.Group,
-					Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] [%s] %s", m.Sender.Username, m.Text)},
-				})
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
+				if m.IsReply() {
+					OPQBot.Send(opqbot.SendMsgPack{
+						SendType:   opqbot.SendTypeTextMsg,
+						SendToType: opqbot.SendToTypeGroup,
+						ToUserUid:  conf.ProConf.OPQBot.Group,
+						Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s -> %s : %s", username, m.ReplyTo.Sender.Username, m.Text)},
+					})
+					logs.Info("-> [TGbot] %+v", m)
+				} else {
+					OPQBot.Send(opqbot.SendMsgPack{
+						SendType:   opqbot.SendTypeTextMsg,
+						SendToType: opqbot.SendToTypeGroup,
+						ToUserUid:  conf.ProConf.OPQBot.Group,
+						Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s : %s", username, m.Text)},
+					})
+				}
+
 			}
 			logs.Info("-> [TGbot] %+v", m.Chat)
 		}
@@ -165,17 +187,36 @@ func TGBotInit() {
 				imageBase64 := base64.StdEncoding.EncodeToString(data)
 				//fmt.Println("base64", imageBase64)
 
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
 				// 使用旧版opq api
 
 				opqbody := opqbot.SendPicMsgPackV1{
 					ToUser:      conf.ProConf.OPQBot.Group,
 					SendMsgType: "PicMsg",
 					SendToType:  opqbot.SendToTypeGroup,
-					Content:     fmt.Sprintf("[TG] [%s] %s", m.Sender.Username, m.Caption),
 					// GroupID:     0,
 					// AtUser:      0,
 					PicBase64Buf: imageBase64,
 				}
+
+				var content string
+
+				if m.Caption != "" {
+					content = fmt.Sprintf("[TG] %s : %s", username, m.Caption)
+				} else {
+					content = fmt.Sprintf("[TG] %s", username)
+				}
+
+				opqbody.Content = content
 
 				b, _ := json.Marshal(opqbody)
 
@@ -197,12 +238,23 @@ func TGBotInit() {
 	TGBot.Handle(tb.OnVoice, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
 			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
 				OPQBot.Send(opqbot.SendMsgPack{
 					SendType:   opqbot.SendTypeTextMsg,
 					SendToType: opqbot.SendToTypeGroup,
 					ToUserUid:  conf.ProConf.OPQBot.Group,
 					// Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] [%s] {VoiceUrl: %s}", m.Sender.Username, fileURL)},
-					Content: opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] [%s] [🗣️]", m.Sender.Username)},
+					Content: opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Voice", username)},
 				})
 			}
 			logs.Info("-> [TGbot] %+v", m.Voice)
@@ -213,26 +265,140 @@ func TGBotInit() {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
 			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
 
-				fileURL, err := TGBot.FileURLByID(m.Audio.FileID)
-				if err != nil {
-					logs.Error(err)
-					return
+				// fileURL, err := TGBot.FileURLByID(m.Audio.FileID)
+				// if err != nil {
+				// 	logs.Error(err)
+				// 	return
+				// }
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
 				}
 
-				OPQBot.Send(opqbot.SendMsgPack{
+				mp := opqbot.SendMsgPack{
 					SendType:   opqbot.SendTypeTextMsg,
 					SendToType: opqbot.SendToTypeGroup,
 					ToUserUid:  conf.ProConf.OPQBot.Group,
-					// Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] [%s] {VoiceUrl: %s}", m.Sender.Username, fileURL)},
-					Content: opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] [%s] [🎵|%s]\n%s", m.Sender.Username, m.Audio.FileName, m.Caption)},
-				})
+				}
 
-				OPQBot.Send(opqbot.SendMsgPack{
-					SendType:   opqbot.SendTypeVoiceByUrl,
+				if m.Caption != "" {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Audio - %s :\n%s", username, m.Audio.FileName, m.Caption)}
+				} else {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Audio - %s", username, m.Video.FileName)}
+				}
+
+				OPQBot.Send(mp)
+
+				// OPQBot.Send(opqbot.SendMsgPack{
+				// 	SendType:   opqbot.SendTypeVoiceByUrl,
+				// 	SendToType: opqbot.SendToTypeGroup,
+				// 	ToUserUid:  conf.ProConf.OPQBot.Group,
+				// 	Content:    opqbot.SendTypeVoiceByUrlContent{VoiceUrl: fileURL},
+				// })
+			}
+			logs.Info("-> [TGbot] %+v", m.Chat)
+		}
+	})
+
+	TGBot.Handle(tb.OnVideo, func(m *tb.Message) {
+		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
+				mp := opqbot.SendMsgPack{
+					SendType:   opqbot.SendTypeTextMsg,
 					SendToType: opqbot.SendToTypeGroup,
 					ToUserUid:  conf.ProConf.OPQBot.Group,
-					Content:    opqbot.SendTypeVoiceByUrlContent{VoiceUrl: fileURL},
-				})
+				}
+
+				if m.Caption != "" {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Video - %s :\n%s", username, m.Video.FileName, m.Caption)}
+				} else {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Video - %s", username, m.Video.FileName)}
+				}
+
+				OPQBot.Send(mp)
+
+			}
+			logs.Info("-> [TGbot] %+v", m.Chat)
+		}
+	})
+
+	TGBot.Handle(tb.OnDocument, func(m *tb.Message) {
+		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
+				mp := opqbot.SendMsgPack{
+					SendType:   opqbot.SendTypeTextMsg,
+					SendToType: opqbot.SendToTypeGroup,
+					ToUserUid:  conf.ProConf.OPQBot.Group,
+				}
+
+				if m.Caption != "" {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s :\n%s", username, m.Document.FileName, m.Caption)}
+				} else {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s", username, m.Document.FileName)}
+				}
+
+				OPQBot.Send(mp)
+
+			}
+			logs.Info("-> [TGbot] %+v", m.Chat)
+		}
+	})
+
+	TGBot.Handle(tb.OnDocument, func(m *tb.Message) {
+		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
+				mp := opqbot.SendMsgPack{
+					SendType:   opqbot.SendTypeTextMsg,
+					SendToType: opqbot.SendToTypeGroup,
+					ToUserUid:  conf.ProConf.OPQBot.Group,
+				}
+
+				if m.Caption != "" {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s :\n%s", username, m.Document.FileName, m.Caption)}
+				} else {
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s", username, m.Document.FileName)}
+				}
+
+				OPQBot.Send(mp)
 			}
 			logs.Info("-> [TGbot] %+v", m.Chat)
 		}

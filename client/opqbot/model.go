@@ -42,12 +42,24 @@ type SendPicMsgPackV1 struct {
 	SendToType   int    `json:"sendToType"`
 	SendMsgType  string `json:"sendMsgType"`
 	Content      string `json:"content"`
-	GroupID      int    `json:"groupid"`
-	AtUser       int    `json:"atUser"`
+	GroupID      int64  `json:"groupid"`
+	AtUser       int64  `json:"atUser"`
 	PicUrl       string `json:"picUrl"`
 	PicBase64Buf string `json:"picBase64Buf"`
 	FileMd5      string `json:"fileMd5"`
 	FlashPic     bool   `json:"flashPic"`
+}
+
+type VideoData struct {
+	GroupID  int64  `json:"GroupID"`
+	VideoUrl string `json:"VideoUrl"`
+	VideoMd5 string `json:"VideoMd5"`
+}
+
+type VideoDataRet struct {
+	Ret      int    `json:"Ret"`
+	MsgStr   string `json:"MsgStr"`
+	VideoUrl string `json:"VideoUrl"`
 }
 
 type SendTypeTextMsgContent struct {
@@ -163,6 +175,15 @@ type currentPacket struct {
 	WebConnID string      `json:"WebConnId"`
 }
 
+type VideoMsgContent struct {
+	Content      interface{} `json:"Content"`
+	ForwordBuf   string      `json:"ForwordBuf"`
+	ForwordField int         `json:"ForwordField"`
+	VideoMd5     string      `json:"VideoMd5"`
+	VideoSize    int64       `json:"VideoSize"`
+	VideoUrl     string      `json:"VideoUrl"`
+}
+
 type GroupPic struct {
 	FileId       int64  `json:"FileId"`
 	FileMd5      string `json:"FileMd5"`
@@ -171,10 +192,25 @@ type GroupPic struct {
 	ForwordField int64  `json:"ForwordField"`
 	Url          string `json:"Url"`
 }
+
 type GroupContent struct {
 	Content  interface{} `json:"Content"`
 	GroupPic []GroupPic  `json:"GroupPic"`
 	Tips     string      `json:"Tips"`
+}
+
+type GroupFileMsgContent struct {
+	FileName string `json:"FileName"`
+	FileSize uint64 `json:"FileSize"`
+	Tips     string `json:"Tips"`
+}
+
+type GroupAtMsgContent struct {
+	Content    string  `json:"Content"`
+	MsgSeq     int     `json:"MsgSeq"`
+	SrcContent string  `json:"SrcContent"`
+	UserID     []int64 `json:"UserID"`
+	Tips       string  `json:"Tips"`
 }
 
 type GroupMsgPack struct {
@@ -197,6 +233,7 @@ type FriendMsgPack struct {
 	RedBaginfo interface{} `json:"RedBaginfo"`
 	ToUin      int64       `json:"ToUin"`
 }
+
 type eventPack struct {
 	CurrentPacket struct {
 		Data      interface{} `json:"Data"`

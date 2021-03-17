@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"opq-plugin-tg2qq/client/opqbot"
 	"opq-plugin-tg2qq/conf"
+	"opq-plugin-tg2qq/util"
+	"strings"
+
 	"time"
 
 	"github.com/wxnacy/wgo/arrays"
@@ -30,7 +33,7 @@ func OPQBotInit() {
 		if packet.FromGroupID == conf.ProConf.OPQBot.Group && packet.FromUserID != OPQBot.QQ && arrays.ContainsInt(conf.ProConf.OPQBot.FilterQQ, packet.FromUserID) == -1 {
 			if packet.MsgType == "TextMsg" {
 				TGBot.Notify(MG, tb.Typing)
-				TGBot.Send(MG, fmt.Sprintf("[QQ] [%s] %s", packet.FromNickName, packet.Content))
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s : %s", packet.FromNickName, packet.Content))
 			} else if packet.MsgType == "PicMsg" {
 				TGBot.Notify(MG, tb.UploadingPhoto)
 
@@ -42,14 +45,14 @@ func OPQBotInit() {
 
 				for i := 1; i <= len(ogc.GroupPic); i++ {
 
-					photo_caption := fmt.Sprintf("[QQ] [%s]", packet.FromNickName)
+					photo_caption := fmt.Sprintf("[QQ] %s ", packet.FromNickName)
 
 					if len(ogc.GroupPic) > 1 {
 						photo_caption = fmt.Sprintf("%s (%d/%d) ", photo_caption, i, len(ogc.GroupPic))
 					}
 
 					if ogc.Content != nil {
-						photo_caption = fmt.Sprintf("%s %s ", photo_caption, ogc.Content)
+						photo_caption = fmt.Sprintf("%s : %s ", photo_caption, ogc.Content)
 					}
 
 					photo := &tb.Photo{File: tb.FromURL(ogc.GroupPic[i-1].Url), Caption: photo_caption}
@@ -57,7 +60,86 @@ func OPQBotInit() {
 					TGBot.Send(MG, photo)
 
 				}
+			} else if packet.MsgType == "AtMsg" {
 
+				TGBot.Notify(MG, tb.Typing)
+
+				gam := opqbot.GroupAtMsgContent{}
+				err := json.Unmarshal([]byte(packet.Content), &gam)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				if gam.Tips == "[回复]" {
+					user, err := OPQBot.GetUserInfo(gam.UserID[0])
+					if err != nil {
+						fmt.Println(err)
+					}
+
+					content := strings.Trim(gam.Content, fmt.Sprintf("@%s ", user.NickName))
+
+					TGBot.Send(MG, fmt.Sprintf("[QQ] %s -> %s : %s", packet.FromNickName, user.NickName, content))
+				} else {
+					TGBot.Send(MG, fmt.Sprintf("[QQ] %s : %s", packet.FromNickName, gam.Content))
+				}
+
+			} else if packet.MsgType == "VoiceMsg" {
+				TGBot.Notify(MG, tb.Typing)
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - Voice", packet.FromNickName))
+			} else if packet.MsgType == "VideoMsg" {
+				TGBot.Notify(MG, tb.Typing)
+
+				// gvm := opqbot.VideoMsgContent{}
+				// err := json.Unmarshal([]byte(packet.Content), &gvm)
+				// if err != nil {
+				// 	fmt.Println(err)
+				// }
+
+				// videodata := opqbot.VideoData{
+				// 	GroupID:  packet.FromGroupID,
+				// 	VideoUrl: gvm.VideoUrl,
+				// 	VideoMd5: gvm.VideoMd5,
+				// }
+
+				// pb, _ := json.Marshal(videodata)
+
+				// opqresp, err := http.Post(fmt.Sprintf("%s%s?qq=%d&funcname=PttCenterSvr.ShortVideoDownReq&timeout=10", conf.ProConf.OPQBot.Url, "/v1/LuaApiCaller", conf.ProConf.OPQBot.QQ),
+				// 	"application/json",
+				// 	bytes.NewBuffer(pb))
+				// if err != nil {
+				// 	fmt.Println(err)
+				// }
+
+				// b, err := ioutil.ReadAll(opqresp.Body)
+				// if err != nil {
+				// }
+
+				// defer opqresp.Body.Close()
+
+				// fmt.Println(string(b))
+
+				// rte := opqbot.VideoDataRet{}
+				// jsonErr := json.Unmarshal(b, &rte)
+				// if jsonErr != nil {
+				// 	log.Fatal(jsonErr)
+				// }
+
+				// vid := &tb.Video{File: tb.FromURL(rte.VideoUrl), Caption: fmt.Sprintf("[QQ] %s - Video ", packet.FromNickName)}
+
+				// TGBot.Send(MG, vid)
+
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - Video ", packet.FromNickName))
+
+			} else if packet.MsgType == "GroupFileMsg" {
+				TGBot.Notify(MG, tb.Typing)
+
+				gfm := opqbot.GroupFileMsgContent{}
+				err := json.Unmarshal([]byte(packet.Content), &gfm)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - File - %s - %s", packet.FromNickName, gfm.FileName, util.ByteSize(gfm.FileSize)))
 			}
 			logs.Info("-> [OPQ]%+v", packet)
 		}
@@ -66,74 +148,7 @@ func OPQBotInit() {
 		logs.Info(err.Error())
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnFriendMessage, func(botQQ int64, packet opqbot.FriendMsgPack) {
-		// if packet.Content == "赞我" {
-		// 	i, ok := ZanNote[packet.FromUin]
-		// 	if ok {
-		// 		if i == time.Now().Day() {
-		// 			OPQBot.Send(opqbot.SendMsgPack{
-		// 				SendType:   opqbot.SendTypeTextMsg,
-		// 				SendToType: opqbot.SendToTypeFriend,
-		// 				ToUserUid:  packet.FromUin,
-		// 				Content:    opqbot.SendTypeTextMsgContent{Content: "今日已赞!"},
-		// 			})
-		// 			return
-		// 		}
-		// 	}
-		// 	OPQBot.Send(opqbot.SendMsgPack{
-		// 		SendType:   opqbot.SendTypeTextMsg,
-		// 		SendToType: opqbot.SendToTypeFriend,
-		// 		ToUserUid:  packet.FromUin,
-		// 		Content:    opqbot.SendTypeTextMsgContent{Content: "正在赞请稍后！"},
-		// 	})
-		// 	success := OPQBot.Zan(packet.FromUin, 50)
-		// 	OPQBot.Send(opqbot.SendMsgPack{
-		// 		SendType:   opqbot.SendTypeTextMsg,
-		// 		SendToType: opqbot.SendToTypeFriend,
-		// 		ToUserUid:  packet.FromUin,
-		// 		Content:    opqbot.SendTypeTextMsgContent{Content: "成功赞了" + strconv.Itoa(success) + "次"},
-		// 	})
-		// 	logs.Info(packet.FromUin)
-		// 	ZanNote[packet.FromUin] = time.Now().Day()
-		// 	return
-		// }
-		// if c := strings.Split(packet.Content, " "); len(c) >= 2 {
-		// 	if c[0] == "#查询" {
-		// 		logs.Info(c[1])
-		// 		qq, err := strconv.ParseInt(c[1], 10, 64)
-		// 		if err != nil {
-		// 			OPQBot.Send(opqbot.SendMsgPack{
-		// 				SendType:   opqbot.SendTypeTextMsg,
-		// 				SendToType: opqbot.SendToTypeFriend,
-		// 				ToUserUid:  packet.FromUin,
-		// 				Content:    opqbot.SendTypeTextMsgContent{Content: err.Error()},
-		// 			})
-		// 		}
-		// 		user, err := OPQBot.GetUserInfo(qq)
-		// 		logs.Info("", user)
-		// 		if err != nil {
-		// 			OPQBot.Send(opqbot.SendMsgPack{
-		// 				SendType:   opqbot.SendTypeTextMsg,
-		// 				SendToType: opqbot.SendToTypeFriend,
-		// 				ToUserUid:  packet.FromUin,
-		// 				Content:    opqbot.SendTypeTextMsgContent{Content: err.Error()},
-		// 			})
-		// 		} else {
-		// 			var sex string
-		// 			if user.Sex == 1 {
-		// 				sex = "女"
-		// 			} else {
-		// 				sex = "男"
-		// 			}
-		// 			OPQBot.Send(opqbot.SendMsgPack{
-		// 				SendType:   opqbot.SendTypeTextMsg,
-		// 				SendToType: opqbot.SendToTypeFriend,
-		// 				ToUserUid:  packet.FromUin,
-		// 				Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("用户:%s[%d]%s\n来自:%s\n年龄:%d\n被赞了:%d次\n", user.NickName, user.QQUin, sex, user.Province+user.City, user.Age, user.LikeNums)},
-		// 			})
-		// 		}
-		// 	}
-		// }
-		// logs.Info("", botQQ, packet)
+		logs.Info("", botQQ, packet)
 	})
 	if err != nil {
 		logs.Info(err.Error())
@@ -175,5 +190,9 @@ func OPQBotInit() {
 	if err != nil {
 		logs.Info(err.Error())
 	}
-	time.Sleep(1 * time.Hour)
+
+	for true {
+		time.Sleep(1 * time.Minute)
+	}
+
 }
