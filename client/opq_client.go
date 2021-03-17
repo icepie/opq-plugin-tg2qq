@@ -191,8 +191,6 @@ func OPQBotInit() {
 		logs.Info(err.Error())
 	}
 
-	for true {
-		time.Sleep(1 * time.Minute)
-	}
+	time.Sleep(525600 * time.Hour)
 
 }

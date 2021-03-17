@@ -17,6 +17,7 @@ import (
 
 	"opq-plugin-tg2qq/client/opqbot"
 	"opq-plugin-tg2qq/conf"
+	"opq-plugin-tg2qq/util"
 	"opq-plugin-tg2qq/util/proxy"
 
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -393,11 +394,38 @@ func TGBotInit() {
 				}
 
 				if m.Caption != "" {
-					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s :\n%s", username, m.Document.FileName, m.Caption)}
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s - %s :\n%s", username, m.Document.FileName, util.ByteSize(uint64(m.Document.FileSize)), m.Caption)}
 				} else {
-					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s", username, m.Document.FileName)}
+					mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Document - %s - %s ", username, m.Document.FileName, util.ByteSize(uint64(m.Document.FileSize)))}
 				}
 
+				OPQBot.Send(mp)
+			}
+			logs.Info("-> [TGbot] %+v", m.Chat)
+		}
+	})
+
+	TGBot.Handle(tb.OnSticker, func(m *tb.Message) {
+		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
+				mp := opqbot.SendMsgPack{
+					SendType:   opqbot.SendTypeTextMsg,
+					SendToType: opqbot.SendToTypeGroup,
+					ToUserUid:  conf.ProConf.OPQBot.Group,
+				}
+
+				mp.Content = opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[TG] %s - Sticker - %s ", username, m.Sticker.Emoji)}
 				OPQBot.Send(mp)
 			}
 			logs.Info("-> [TGbot] %+v", m.Chat)
