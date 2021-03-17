@@ -499,6 +499,46 @@ func TGBotInit() {
 		}
 	})
 
+	TGBot.Handle(tb.OnLocation, func(m *tb.Message) {
+		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
+			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {
+
+				username := m.Sender.Username
+
+				if username == "" {
+					if m.Sender.LastName != "" {
+						username = fmt.Sprintf("%s %s", m.Sender.FirstName, m.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.Sender.FirstName)
+					}
+				}
+
+				content := fmt.Sprintf("[TG] %s - Location \n\t Lat: %f \n\t Lng: %f", username, m.Location.Lat, m.Location.Lng)
+
+				if m.IsForwarded() {
+					content = fmt.Sprintf("[TG] %s - Location - Forwarded \n\t Lng: %f \n\t Lat: %f", username, m.Location.Lat, m.Location.Lng)
+				} else if m.IsReply() {
+					content = fmt.Sprintf("[TG] %s -> %s - Location \n\t Lat: %f \n\t Lng: %f", username, m.ReplyTo.Sender.Username, m.Location.Lat, m.Location.Lng)
+				}
+
+				// if m.Caption != "" {
+				// 	content = fmt.Sprintf("%s\n\n", content)
+				// }
+
+				mp := opqbot.SendMsgPack{
+					SendType:   opqbot.SendTypeTextMsg,
+					SendToType: opqbot.SendToTypeGroup,
+					ToUserUid:  conf.ProConf.OPQBot.Group,
+					Content:    opqbot.SendTypeTextMsgContent{Content: content},
+				}
+
+				OPQBot.Send(mp)
+
+			}
+			logs.Info("-> [TGbot] %+v", m.Chat)
+		}
+	})
+
 	TGBot.Handle(tb.OnNewGroupPhoto, func(m *tb.Message) {
 		if strconv.Itoa(int(m.Chat.ID)) == conf.ProConf.TGBot.ChatID {
 			if m.Sender.ID != TGBot.Me.ID && arrays.ContainsString(conf.ProConf.TGBot.FilterID, m.Sender.Recipient()) == -1 {

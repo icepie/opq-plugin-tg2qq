@@ -140,7 +140,25 @@ func OPQBotInit() {
 				}
 
 				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - File - %s - %s", packet.FromNickName, gfm.FileName, util.ByteSize(gfm.FileSize)))
+			} else if packet.MsgType == "JsonMsg" {
+				TGBot.Notify(MG, tb.Typing)
+
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - Json", packet.FromNickName))
+
+			} else if packet.MsgType == "XmlMsg" {
+				TGBot.Notify(MG, tb.Typing)
+
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - XML", packet.FromNickName))
+
+				Location := &tb.Location{Lat: 34.611679, Lng: 112.429459}
+				TGBot.Send(MG, Location)
+
+			} else if packet.MsgType == "RedBagMsg" {
+				TGBot.Notify(MG, tb.Typing)
+
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - RedBag", packet.FromNickName))
 			}
+
 			logs.Info("-> [OPQ]%+v", packet)
 		}
 	})
