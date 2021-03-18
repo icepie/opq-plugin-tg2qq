@@ -206,6 +206,16 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				// 使用旧版opq api
 
 				opqbody := opqbot.SendPicMsgPackV1{
@@ -220,7 +230,7 @@ func TGBotInit() {
 				content := fmt.Sprintf("[TG] %s", username)
 
 				if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s", username, m.ReplyTo.Sender.Username)
+					content = fmt.Sprintf("[TG] %s -> %s", username, replyToUsername)
 				}
 
 				if m.IsForwarded() {
@@ -264,10 +274,20 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Voice", username)
 
 				if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s - Voice", username, m.ReplyTo.Sender.Username)
+					content = fmt.Sprintf("[TG] %s -> %s - Voice", username, replyToUsername)
 				}
 
 				if m.IsForwarded() {
@@ -311,10 +331,20 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Audio - %s", username, m.Audio.FileName)
 
 				if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s - Audio - %s", username, m.ReplyTo.Sender.Username, m.Audio.FileName)
+					content = fmt.Sprintf("[TG] %s -> %s - Audio - %s", username, replyToUsername, m.Audio.FileName)
 				}
 
 				if m.IsForwarded() {
@@ -359,10 +389,20 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Video - %s", username, m.Video.FileName)
 
 				if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s - Video - %s", username, m.ReplyTo.Sender.Username, m.Video.FileName)
+					content = fmt.Sprintf("[TG] %s -> %s - Video - %s", username, replyToUsername, m.Video.FileName)
 				}
 
 				if m.IsForwarded() {
@@ -401,10 +441,24 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Document - %s - %s", username, m.Document.FileName, util.ByteSize(uint64(m.Document.FileSize)))
 
 				if m.IsForwarded() {
 					content = fmt.Sprintf("%s - Forwarded", content)
+				}
+
+				if m.IsReply() {
+					content = fmt.Sprintf("[TG] %s -> %s - Document - %s", username, replyToUsername, m.Document.FileName)
 				}
 
 				if m.Caption != "" {
@@ -438,10 +492,20 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Sticker - %s", username, m.Sticker.Emoji)
 
 				if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s - Sticker - %s", username, m.ReplyTo.Sender.Username, m.Sticker.Emoji)
+					content = fmt.Sprintf("[TG] %s -> %s - Sticker - %s", username, replyToUsername, m.Sticker.Emoji)
 				}
 
 				if m.IsForwarded() {
@@ -475,10 +539,20 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Animation", username)
 
 				if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s - Animation - %s", username, m.ReplyTo.Sender.Username, m.Sticker.Emoji)
+					content = fmt.Sprintf("[TG] %s -> %s - Animation - %s", username, replyToUsername, m.Sticker.Emoji)
 				}
 
 				if m.IsForwarded() {
@@ -513,12 +587,22 @@ func TGBotInit() {
 					}
 				}
 
+				replyToUsername := m.ReplyTo.Sender.Username
+
+				if replyToUsername == "" {
+					if m.Sender.LastName != "" {
+						replyToUsername = fmt.Sprintf("%s %s", m.ReplyTo.Sender.FirstName, m.ReplyTo.Sender.LastName)
+					} else {
+						username = fmt.Sprintf("%s", m.ReplyTo.Sender.FirstName)
+					}
+				}
+
 				content := fmt.Sprintf("[TG] %s - Location \n\t Lat: %f \n\t Lng: %f", username, m.Location.Lat, m.Location.Lng)
 
 				if m.IsForwarded() {
 					content = fmt.Sprintf("[TG] %s - Location - Forwarded \n\t Lng: %f \n\t Lat: %f", username, m.Location.Lat, m.Location.Lng)
 				} else if m.IsReply() {
-					content = fmt.Sprintf("[TG] %s -> %s - Location \n\t Lat: %f \n\t Lng: %f", username, m.ReplyTo.Sender.Username, m.Location.Lat, m.Location.Lng)
+					content = fmt.Sprintf("[TG] %s -> %s - Location \n\t Lat: %f \n\t Lng: %f", username, replyToUsername, m.Location.Lat, m.Location.Lng)
 				}
 
 				// if m.Caption != "" {

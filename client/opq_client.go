@@ -150,8 +150,8 @@ func OPQBotInit() {
 
 				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - XML", packet.FromNickName))
 
-				Location := &tb.Location{Lat: 34.611679, Lng: 112.429459}
-				TGBot.Send(MG, Location)
+				// Location := &tb.Location{Lat: 34.611679, Lng: 112.429459}
+				// TGBot.Send(MG, Location)
 
 			} else if packet.MsgType == "RedBagMsg" {
 				TGBot.Notify(MG, tb.Typing)
