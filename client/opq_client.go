@@ -185,25 +185,26 @@ func OPQBotInit() {
 			logs.Error("[OPQ] Fail to get opq bot info from QQ %d", conf.ProConf.OPQBot.QQ)
 		} else {
 			logs.Info("[OPQ] Online: %+v", info)
-			OPQBot.Send(opqbot.SendMsgPack{
-				SendType:   opqbot.SendTypeTextMsg,
-				SendToType: opqbot.SendToTypeGroup,
-				ToUserUid:  conf.ProConf.OPQBot.Group,
-				Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[opq-plugin-tg2qq] starting...\n\nTG Chat ID: %s", conf.ProConf.TGBot.ChatID)},
-			})
+			// OPQBot.Send(opqbot.SendMsgPack{
+			// 	SendType:   opqbot.SendTypeTextMsg,
+			// 	SendToType: opqbot.SendToTypeGroup,
+			// 	ToUserUid:  conf.ProConf.OPQBot.Group,
+			// 	Content:    opqbot.SendTypeTextMsgContent{Content: fmt.Sprintf("[opq-plugin-tg2qq] starting...\n\nTG Chat ID: %s", conf.ProConf.TGBot.ChatID)},
+			// })
 		}
 	})
 	if err != nil {
 		logs.Error("[OPQ] 连接失败")
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnDisconnected, func() {
-		logs.Warn("[OPQ] 连接断开！！")
+		logs.Warn("[OPQ] 连接断开！！重新启动连接...")
+		OPQBotInit()
 	})
 	if err != nil {
 		logs.Info(err.Error())
 	}
 	err = OPQBot.AddEvent(opqbot.EventNameOnOther, func(botQQ int64, e interface{}) {
-		logs.Error(err.Error())
+		logs.Info(e)
 	})
 	if err != nil {
 		logs.Info(err.Error())

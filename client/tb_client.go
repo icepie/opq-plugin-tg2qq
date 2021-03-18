@@ -84,7 +84,7 @@ func TGBotInit() {
 		logs.Emergency("[TGBot] Connet %s", err.Error())
 	} else {
 		logs.Info("[TGBot] Online: %+v", *TGBot.Me)
-		TGBot.Send(MG, fmt.Sprintf("[opq-plugin-tg2qq] starting...\n\nQQ Group Num: %d", conf.ProConf.OPQBot.Group))
+		//TGBot.Send(MG, fmt.Sprintf("[opq-plugin-tg2qq] starting...\n\nQQ Group Num: %d", conf.ProConf.OPQBot.Group))
 	}
 
 	// Group text msg handler
