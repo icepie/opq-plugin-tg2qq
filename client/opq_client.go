@@ -76,7 +76,7 @@ func OPQBotInit() {
 						fmt.Println(err)
 					}
 
-					content := strings.Trim(gam.Content, fmt.Sprintf("@%s ", user.NickName))
+					content := strings.TrimPrefix(gam.Content, fmt.Sprintf("@%s ", user.NickName))
 
 					TGBot.Send(MG, fmt.Sprintf("[QQ] %s -> %s : %s", packet.FromNickName, user.NickName, content))
 				} else {
