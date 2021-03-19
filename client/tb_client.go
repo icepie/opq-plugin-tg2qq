@@ -219,14 +219,14 @@ func TGBotInit() {
 
 				// 使用旧版opq api
 
-				// opqbody := opqbot.SendPicMsgPackV1{
-				// 	ToUser:      conf.ProConf.OPQBot.Group,
-				// 	SendMsgType: "PicMsg",
-				// 	SendToType:  opqbot.SendToTypeGroup,
-				// 	// GroupID:     0,
-				// 	// AtUser:      0,
-				// 	PicBase64Buf: imageBase64,
-				// }
+				opqbody := opqbot.SendPicMsgPackV1{
+					ToUser:      conf.ProConf.OPQBot.Group,
+					SendMsgType: "PicMsg",
+					SendToType:  opqbot.SendToTypeGroup,
+					// GroupID:     0,
+					// AtUser:      0,
+					PicBase64Buf: imageBase64,
+				}
 
 				content := fmt.Sprintf("[TG] %s", username)
 
@@ -252,25 +252,26 @@ func TGBotInit() {
 					content = fmt.Sprintf("%s : %s", content, m.Caption)
 				}
 
-				// opqbody.Content = content
+				opqbody.Content = content
 
-				// b, _ := json.Marshal(opqbody)
+				b, _ := json.Marshal(opqbody)
 
-				OPQBot.Send(opqbot.SendMsgPack{
-					SendType:   opqbot.SendTypePicMsgByBase64,
-					SendToType: opqbot.SendToTypeGroup,
-					ToUserUid:  conf.ProConf.OPQBot.QQ,
-					Content:    opqbot.SendTypePicMsgByBase64Content{Content: content, Base64: imageBase64},
-				})
-
-				// opqresp, err := http.Post(fmt.Sprintf("%s%s?qq=%d&funcname=SendMsg&timeout=10", conf.ProConf.OPQBot.Url, "/v1/LuaApiCaller", conf.ProConf.OPQBot.QQ),
-				// 	"application/json",
-				// 	bytes.NewBuffer(b))
-				// if err != nil {
-				// 	fmt.Println(err)
-				// }
-				// defer opqresp.Body.Close()
+				opqresp, err := http.Post(fmt.Sprintf("%s%s?qq=%d&funcname=SendMsg&timeout=10", conf.ProConf.OPQBot.Url, "/v1/LuaApiCaller", conf.ProConf.OPQBot.QQ),
+					"application/json",
+					bytes.NewBuffer(b))
+				if err != nil {
+					fmt.Println(err)
+				}
+				defer opqresp.Body.Close()
 				// body, _ := ioutil.ReadAll(opqresp.Body)
+
+				// v2 base64 发送图片
+				// OPQBot.Send(opqbot.SendMsgPack{
+				// 	SendType:   opqbot.SendTypePicMsgByBase64,
+				// 	SendToType: opqbot.SendToTypeGroup,
+				// 	ToUserUid:  conf.ProConf.OPQBot.QQ,
+				// 	Content:    opqbot.SendTypePicMsgByBase64Content{Content: content, Base64: imageBase64},
+				// })
 
 			}
 			logs.Info("-> [TGbot] %+v", m)

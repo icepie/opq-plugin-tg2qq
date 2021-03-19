@@ -156,7 +156,26 @@ func OPQBotInit() {
 			} else if packet.MsgType == "RedBagMsg" {
 				TGBot.Notify(MG, tb.Typing)
 
-				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - RedBag", packet.FromNickName))
+				RedBaginfoStr := fmt.Sprint(packet.RedBaginfo)
+
+				redBagInfoText := strings.TrimSuffix(strings.TrimPrefix(strings.Replace(RedBaginfoStr, ": ", ":", -1), "map["), "]")
+
+				s := strings.Split(redBagInfoText, " ")
+
+				redBagInfo := make(map[string]string)
+
+				for _, v := range s {
+					// fmt.Println(v)
+
+					kv := strings.Split(v, ":")
+
+					// i
+
+					redBagInfo[kv[0]] = kv[1]
+				}
+
+				TGBot.Send(MG, fmt.Sprintf("[QQ] %s - RedBag - %s", packet.FromNickName, redBagInfo["Tittle"]))
+
 			}
 
 			logs.Info("-> [OPQ]%+v", packet)
