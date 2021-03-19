@@ -397,7 +397,7 @@ OuterLoop:
 				sendJsonPack["Content"] = content.Content
 				sendJsonPack["GroupID"] = content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypePicMsgByUrl:
@@ -414,7 +414,7 @@ OuterLoop:
 				sendJsonPack["GroupID"] = Content.Group
 				sendJsonPack["FlashPic"] = Content.Flash
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypePicMsgByLocal:
@@ -431,7 +431,7 @@ OuterLoop:
 				sendJsonPack["GroupID"] = Content.Group
 				sendJsonPack["FlashPic"] = Content.Flash
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypePicMsgByMd5:
@@ -448,7 +448,7 @@ OuterLoop:
 				sendJsonPack["GroupID"] = Content.Group
 				sendJsonPack["FlashPic"] = Content.Flash
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeVoiceByUrl:
@@ -461,7 +461,7 @@ OuterLoop:
 				sendJsonPack["VoiceUrl"] = Content.VoiceUrl
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeVoiceByLocal:
@@ -474,7 +474,7 @@ OuterLoop:
 				sendJsonPack["VoiceUrl"] = Content.Path
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeXml:
@@ -487,7 +487,7 @@ OuterLoop:
 				sendJsonPack["Content"] = Content.Content
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeJson:
@@ -500,7 +500,7 @@ OuterLoop:
 				sendJsonPack["Content"] = Content.Content
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeForword:
@@ -515,7 +515,7 @@ OuterLoop:
 				sendJsonPack["ForwordField"] = Content.ForwordField
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		case SendTypeReplay:
@@ -528,7 +528,24 @@ OuterLoop:
 				sendJsonPack["ReplayInfo"] = Content.ReplayInfo
 				sendJsonPack["GroupID"] = Content.Group
 			default:
-				logs.Error("[OPQ] 类型不匹配")
+				logs.Warn("[OPQ] 类型不匹配")
+				continue OuterLoop
+			}
+		case SendTypePicMsgByBase64:
+			sendJsonPack["SendMsgType"] = "PicMsg"
+			sendJsonPack["SendToType"] = sendMsgPack.SendToType
+			switch Content := sendMsgPack.Content.(type) {
+			case SendTypePicMsgByBase64Content:
+				sendJsonPack["PicBase64Buf"] = Content.Base64
+				sendJsonPack["Content"] = Content.Content
+				sendJsonPack["FlashPic"] = Content.Flash
+			case SendTypePicMsgByBase64ContentPrivateChat:
+				sendJsonPack["PicBase64Buf"] = Content.Base64
+				sendJsonPack["Content"] = Content.Content
+				sendJsonPack["GroupID"] = Content.Group
+				sendJsonPack["FlashPic"] = Content.Flash
+			default:
+				logs.Warn("[OPQ] 类型不匹配")
 				continue OuterLoop
 			}
 		}

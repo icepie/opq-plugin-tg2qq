@@ -11,6 +11,7 @@ const (
 	SendTypeJson                   = 8
 	SendTypeForword                = 9
 	SendTypeReplay                 = 10
+	SendTypePicMsgByBase64         = 11
 	SendToTypeFriend               = 1
 	SendToTypeGroup                = 2
 	SendToTypePrivateChat          = 3
@@ -60,6 +61,18 @@ type VideoDataRet struct {
 	Ret      int    `json:"Ret"`
 	MsgStr   string `json:"MsgStr"`
 	VideoUrl string `json:"VideoUrl"`
+}
+
+type SendTypePicMsgByBase64Content struct {
+	Content string
+	Base64  string
+	Flash   bool
+}
+type SendTypePicMsgByBase64ContentPrivateChat struct {
+	Content string
+	Base64  string
+	Group   int64
+	Flash   bool
 }
 
 type SendTypeTextMsgContent struct {
